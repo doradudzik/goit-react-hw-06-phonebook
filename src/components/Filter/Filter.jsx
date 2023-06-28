@@ -1,7 +1,16 @@
+import { useDispatch, useSelector } from 'react-redux';
 import css from './Filter.module.css';
-import PropTypes from 'prop-types';
+import { getFilter } from 'redux/selectors';
+import { setFilter } from 'redux/filterSlice';
 
-const Filter = ({ filter, handleChange }) => {
+const Filter = () => {
+  const filter = useSelector(getFilter);
+  const dispatch = useDispatch();
+
+  const handleChange = event => {
+    const { value } = event.currentTarget;
+    dispatch(setFilter(value));
+  };
   return (
     <form className={css.form}>
       <label>Find contacts by name:</label>
@@ -14,11 +23,6 @@ const Filter = ({ filter, handleChange }) => {
       />
     </form>
   );
-};
-
-Filter.propTypes = {
-  filter: PropTypes.string.isRequired,
-  handleChange: PropTypes.func.isRequired,
 };
 
 export default Filter;

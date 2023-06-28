@@ -1,14 +1,20 @@
 import { useState } from 'react';
 import css from './ContactForm.module.css';
-import PropTypes from 'prop-types';
-import { nanoid } from 'nanoid';
 
-const ContactForm = ({ addContact }) => {
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redux/contactSlice';
+import { getContacts } from 'redux/selectors';
+
+const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+
   const handleChange = evt => {
     const { name, value } = evt.target;
+
     if (name === 'name') {
       setName(value.trim());
     } else if (name === 'number') {
@@ -24,13 +30,17 @@ const ContactForm = ({ addContact }) => {
       return;
     }
 
-    const newContact = {
-      id: nanoid(),
-      name,
-      number,
-    };
+    const existingContact = contacts.find(
+      contact =>
+        contact.name.toLowerCase() === name.toLowerCase() &&
+        contact.number === number
+    );
 
-    addContact(newContact);
+    if (existingContact) {
+      alert('This contact already exists');
+      return;
+    }
+    dispatch(addContact(name, number));
 
     setName('');
     setNumber('');
@@ -65,10 +75,6 @@ const ContactForm = ({ addContact }) => {
       </button>
     </form>
   );
-};
-
-ContactForm.propTypes = {
-  addContact: PropTypes.func.isRequired,
 };
 
 export default ContactForm;
